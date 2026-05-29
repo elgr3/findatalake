@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+yfinance
+pandas
+pyarrow
+duckdb
+scikit-learn
+mlflow
+azure-storage-blob
+azure-storage-file-datalake
+apache-airflow
+python-dotenv
+httpx
+pytest
+numpy

@@ -1,0 +1,41 @@
+ticker,name,sector,market_cap_bn_eur,per,dividend_yield_pct,revenue_bn_eur,employees
+AI.PA,Air Liquide,Materials,76.2,24.8,2.1,27.1,67400
+AIR.PA,Airbus,Industrials,106.4,31.2,1.4,65.4,134000
+ALO.PA,Alstom,Industrials,6.1,38.5,0.0,17.6,80000
+MT.AS,ArcelorMittal,Materials,16.8,7.4,1.6,62.3,154000
+CS.PA,AXA,Financials,75.3,10.2,5.6,102.1,93000
+BNP.PA,BNP Paribas,Financials,68.3,6.2,7.1,46.2,183000
+EN.PA,Bouygues,Industrials,12.8,10.9,5.1,54.3,218000
+CAP.PA,Capgemini,Information Technology,26.4,18.7,1.9,22.1,358000
+CA.PA,Carrefour,Consumer Staples,12.6,11.4,4.7,94.1,316000
+ACA.PA,Crédit Agricole,Financials,39.1,7.1,6.9,23.4,98000
+BN.PA,Danone,Consumer Staples,32.4,17.9,3.4,27.4,93000
+DSY.PA,Dassault Systèmes,Information Technology,32.1,29.6,0.6,6.0,23400
+ENGI.PA,Engie,Utilities,41.3,13.8,5.3,85.1,97000
+EL.PA,EssilorLuxottica,Health Care,70.2,28.4,1.4,25.4,191000
+ERF.PA,Eurofins Scientific,Health Care,7.6,20.1,0.9,6.7,61500
+RMS.PA,Hermès,Consumer Discretionary,207.4,47.3,0.7,14.1,23200
+KER.PA,Kering,Consumer Discretionary,23.1,21.8,4.2,17.6,49000
+LR.PA,Legrand,Industrials,18.7,24.1,2.2,9.0,41300
+OR.PA,L'Oréal,Consumer Staples,183.6,32.9,2.2,42.2,90700
+MC.PA,LVMH,Consumer Discretionary,271.3,20.4,2.0,84.7,196000
+ML.PA,Michelin,Consumer Discretionary,18.2,12.1,3.9,28.6,131600
+ORA.PA,Orange,Communication Services,24.7,13.6,7.3,43.9,136500
+RI.PA,Pernod Ricard,Consumer Staples,28.9,18.6,3.5,11.6,19200
+PUB.PA,Publicis,Communication Services,25.1,12.3,3.0,14.5,103500
+RNO.PA,Renault,Consumer Discretionary,10.9,4.3,3.7,52.4,109700
+SAF.PA,Safran,Industrials,68.4,30.1,1.0,23.7,92000
+SGO.PA,Saint-Gobain,Materials,25.9,12.4,3.1,47.2,157900
+SAN.PA,Sanofi,Health Care,117.6,15.2,3.8,43.1,91000
+SU.PA,Schneider Electric,Industrials,114.2,28.7,1.8,36.0,150300
+GLE.PA,Société Générale,Financials,23.4,6.1,7.0,25.3,111700
+STLAM.MI,Stellantis,Consumer Discretionary,14.2,3.8,5.3,156.9,249000
+STM.PA,STMicroelectronics,Information Technology,10.3,14.6,0.6,12.8,50500
+TEP.PA,Teleperformance,Information Technology,4.1,9.4,4.8,10.4,409000
+HO.PA,Thales,Industrials,24.8,22.3,1.4,18.7,81400
+TTE.PA,TotalEnergies,Energy,143.6,8.1,5.4,207.4,101300
+URW.PA,Unibail-Rodamco-Westfield,Real Estate,9.4,12.8,5.2,4.9,3600
+VIE.PA,Veolia,Utilities,11.6,15.4,4.3,43.1,218000
+DG.PA,Vinci,Industrials,61.8,15.7,3.3,68.8,282000
+VIV.PA,Vivendi,Communication Services,2.2,11.9,3.6,3.8,8500
+WLN.PA,Worldline,Information Technology,1.8,9.2,0.0,4.6,21500
