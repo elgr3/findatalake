@@ -13,3 +13,5 @@ python-dotenv
 httpx
 pytest
 numpy
+pytest-cov
+coverage
