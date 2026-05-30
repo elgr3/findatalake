@@ -39,10 +39,7 @@ class AnomalyDetector:
     def load_staging_data(self) -> pd.DataFrame:
         """Downloads all Parquet blobs from staging/market_data/ and concatenates them."""
         container_client = self.blob_service.get_container_client(self.container_staging)
-        blobs = [
-            b.name
-            for b in container_client.list_blobs(name_starts_with="market_data/")
-        ]
+        blobs = [b.name for b in container_client.list_blobs(name_starts_with="market_data/")]
 
         if not blobs:
             raise FileNotFoundError("No Parquet blobs found under staging/market_data/")
@@ -121,9 +118,7 @@ class AnomalyDetector:
                     container=self.container_models, blob=blob_name
                 )
                 blob_client.upload_blob(buffer, overwrite=True)
-                logger.info(
-                    "Uploaded %s → models/%s", type(artifact).__name__, blob_name
-                )
+                logger.info("Uploaded %s → models/%s", type(artifact).__name__, blob_name)
             except AzureError as exc:
                 raise RuntimeError(
                     f"Failed to upload '{blob_name}' to models container: {exc}"

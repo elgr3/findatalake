@@ -65,14 +65,8 @@ def log_weekly_report(**context):
         models.get("blobs", 0),
         models.get("size_mb", 0.0),
     )
-    total_blobs = (
-        raw.get("blobs", 0) + staging.get("blobs", 0) + models.get("blobs", 0)
-    )
-    total_mb = (
-        raw.get("size_mb", 0.0)
-        + staging.get("size_mb", 0.0)
-        + models.get("size_mb", 0.0)
-    )
+    total_blobs = raw.get("blobs", 0) + staging.get("blobs", 0) + models.get("blobs", 0)
+    total_mb = raw.get("size_mb", 0.0) + staging.get("size_mb", 0.0) + models.get("size_mb", 0.0)
     logger.info("--------------------------------------------")
     logger.info("  TOTAL    — %4d blobs, %8.3f MB", total_blobs, total_mb)
     logger.info("============================================")

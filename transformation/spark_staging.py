@@ -57,10 +57,7 @@ class StagingTransformer:
 
         # Flatten column names: handles both single-level ("Open") and
         # MultiIndex ([["Open", "MC.PA"]]) produced by newer yfinance versions.
-        flat_columns = [
-            str(c[0]) if isinstance(c, list) else str(c)
-            for c in data_dict["columns"]
-        ]
+        flat_columns = [str(c[0]) if isinstance(c, list) else str(c) for c in data_dict["columns"]]
         df = pd.DataFrame(
             data=data_dict["data"],
             columns=flat_columns,
@@ -127,9 +124,7 @@ class StagingTransformer:
             )
             blob_client.upload_blob(buffer, overwrite=True)
         except AzureError as exc:
-            raise RuntimeError(
-                f"Failed to upload Parquet to staging/{blob_path}: {exc}"
-            ) from exc
+            raise RuntimeError(f"Failed to upload Parquet to staging/{blob_path}: {exc}") from exc
 
         logger.info("Uploaded Parquet → staging/%s", blob_path)
         return blob_path

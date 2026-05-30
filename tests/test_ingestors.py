@@ -11,6 +11,7 @@ import pytest
 # Fixtures
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture
 def env_setup(monkeypatch):
     """Sets the minimum env vars required by APIIngestor and FileIngestor."""
@@ -56,20 +57,25 @@ def sample_fundamentals_df():
 # APIIngestor tests
 # ---------------------------------------------------------------------------
 
+
 class TestAPIIngestor:
 
     def test_init_raises_without_env(self, monkeypatch):
         """EnvironmentError must be raised when the connection string is missing."""
         monkeypatch.delenv("AZURE_STORAGE_CONNECTION_STRING", raising=False)
         from ingestion.api_ingestor import APIIngestor
+
         with pytest.raises(EnvironmentError, match="AZURE_STORAGE_CONNECTION_STRING"):
             APIIngestor()
 
     def test_fetch_ticker_data_returns_dict(self, env_setup, sample_ohlcv_df):
         """fetch_ticker_data must return a dict with the required metadata keys."""
-        with patch("ingestion.api_ingestor.BlobServiceClient"), \
-             patch("ingestion.api_ingestor.yf.download", return_value=sample_ohlcv_df):
+        with (
+            patch("ingestion.api_ingestor.BlobServiceClient"),
+            patch("ingestion.api_ingestor.yf.download", return_value=sample_ohlcv_df),
+        ):
             from ingestion.api_ingestor import APIIngestor
+
             ingestor = APIIngestor()
             result = ingestor.fetch_ticker_data("MC.PA")
 
@@ -81,9 +87,12 @@ class TestAPIIngestor:
 
     def test_fetch_ticker_data_raises_on_empty_df(self, env_setup):
         """fetch_ticker_data must raise ValueError when yfinance returns no data."""
-        with patch("ingestion.api_ingestor.BlobServiceClient"), \
-             patch("ingestion.api_ingestor.yf.download", return_value=pd.DataFrame()):
+        with (
+            patch("ingestion.api_ingestor.BlobServiceClient"),
+            patch("ingestion.api_ingestor.yf.download", return_value=pd.DataFrame()),
+        ):
             from ingestion.api_ingestor import APIIngestor
+
             ingestor = APIIngestor()
             with pytest.raises(ValueError, match="No data returned"):
                 ingestor.fetch_ticker_data("FAKE.PA")
@@ -92,9 +101,12 @@ class TestAPIIngestor:
         """upload_to_blob must return a path with Hive-style partitioning and .json extension."""
         with patch("ingestion.api_ingestor.BlobServiceClient") as mock_bsc:
             mock_blob_client = MagicMock()
-            mock_bsc.from_connection_string.return_value.get_blob_client.return_value = mock_blob_client
+            mock_bsc.from_connection_string.return_value.get_blob_client.return_value = (
+                mock_blob_client
+            )
 
             from ingestion.api_ingestor import APIIngestor
+
             ingestor = APIIngestor()
             payload = {
                 "ticker": "MC.PA",
@@ -116,10 +128,15 @@ class TestAPIIngestor:
         """run() must return a dict with success, failed, and total keys."""
         with patch("ingestion.api_ingestor.BlobServiceClient"):
             from ingestion.api_ingestor import APIIngestor
+
             ingestor = APIIngestor()
 
-        with patch.object(ingestor, "fetch_ticker_data", return_value={"ticker": "MC.PA", "data": {}}), \
-             patch.object(ingestor, "upload_to_blob", return_value="raw/api/year=2026/MC_PA.json"):
+        with (
+            patch.object(
+                ingestor, "fetch_ticker_data", return_value={"ticker": "MC.PA", "data": {}}
+            ),
+            patch.object(ingestor, "upload_to_blob", return_value="raw/api/year=2026/MC_PA.json"),
+        ):
             report = ingestor.run(["MC.PA", "TTE.PA"])
 
         assert "success" in report
@@ -131,6 +148,7 @@ class TestAPIIngestor:
         """run() must skip failed tickers and continue processing the rest."""
         with patch("ingestion.api_ingestor.BlobServiceClient"):
             from ingestion.api_ingestor import APIIngestor
+
             ingestor = APIIngestor()
 
         def mock_fetch(ticker):
@@ -138,8 +156,10 @@ class TestAPIIngestor:
                 raise ValueError("Simulated yfinance error")
             return {"ticker": ticker, "data": {}}
 
-        with patch.object(ingestor, "fetch_ticker_data", side_effect=mock_fetch), \
-             patch.object(ingestor, "upload_to_blob", return_value="raw/api/..."):
+        with (
+            patch.object(ingestor, "fetch_ticker_data", side_effect=mock_fetch),
+            patch.object(ingestor, "upload_to_blob", return_value="raw/api/..."),
+        ):
             report = ingestor.run(["FAIL.PA", "MC.PA", "TTE.PA"])
 
         assert len(report["failed"]) == 1
@@ -152,12 +172,14 @@ class TestAPIIngestor:
 # FileIngestor tests
 # ---------------------------------------------------------------------------
 
+
 class TestFileIngestor:
 
     def test_validate_csv_passes_with_correct_columns(self, env_setup, sample_fundamentals_df):
         """validate_csv must return True when all required columns are present."""
         with patch("ingestion.file_ingestor.BlobServiceClient"):
             from ingestion.file_ingestor import FileIngestor
+
             ingestor = FileIngestor()
 
         result = ingestor.validate_csv(sample_fundamentals_df)
@@ -167,6 +189,7 @@ class TestFileIngestor:
         """validate_csv must raise ValueError when a required column is absent."""
         with patch("ingestion.file_ingestor.BlobServiceClient"):
             from ingestion.file_ingestor import FileIngestor
+
             ingestor = FileIngestor()
 
         df_missing = sample_fundamentals_df.drop(columns=["per"])
@@ -177,21 +200,26 @@ class TestFileIngestor:
         """validate_csv must raise ValueError when a fully-empty row is present."""
         with patch("ingestion.file_ingestor.BlobServiceClient"):
             from ingestion.file_ingestor import FileIngestor
+
             ingestor = FileIngestor()
 
-        empty_row = pd.DataFrame([[None] * len(sample_fundamentals_df.columns)],
-                                 columns=sample_fundamentals_df.columns)
+        empty_row = pd.DataFrame(
+            [[None] * len(sample_fundamentals_df.columns)], columns=sample_fundamentals_df.columns
+        )
         df_with_empty = pd.concat([sample_fundamentals_df, empty_row], ignore_index=True)
         with pytest.raises(ValueError, match="fully-empty"):
             ingestor.validate_csv(df_with_empty)
 
     def test_run_raises_if_csv_missing(self, env_setup):
         """run() must raise FileNotFoundError when the source CSV does not exist."""
-        with patch("ingestion.file_ingestor.BlobServiceClient"), \
-             patch("ingestion.file_ingestor.DEFAULT_CSV_PATH") as mock_path:
+        with (
+            patch("ingestion.file_ingestor.BlobServiceClient"),
+            patch("ingestion.file_ingestor.DEFAULT_CSV_PATH") as mock_path,
+        ):
             mock_path.exists.return_value = False
 
             from ingestion.file_ingestor import FileIngestor
+
             ingestor = FileIngestor()
             ingestor.csv_path = mock_path  # point ingestor to the mock path
 
@@ -202,9 +230,12 @@ class TestFileIngestor:
         """upload_to_blob must return a path ending with .csv."""
         with patch("ingestion.file_ingestor.BlobServiceClient") as mock_bsc:
             mock_blob_client = MagicMock()
-            mock_bsc.from_connection_string.return_value.get_blob_client.return_value = mock_blob_client
+            mock_bsc.from_connection_string.return_value.get_blob_client.return_value = (
+                mock_blob_client
+            )
 
             from ingestion.file_ingestor import FileIngestor
+
             ingestor = FileIngestor()
 
             # Write a temporary CSV file to avoid FileNotFoundError on open()

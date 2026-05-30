@@ -17,8 +17,14 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 EXPECTED_COLUMNS = {
-    "ticker", "name", "sector", "market_cap_bn_eur",
-    "per", "dividend_yield_pct", "revenue_bn_eur", "employees",
+    "ticker",
+    "name",
+    "sector",
+    "market_cap_bn_eur",
+    "per",
+    "dividend_yield_pct",
+    "revenue_bn_eur",
+    "employees",
 }
 
 # Path relative to the project root (findatalake/)
@@ -51,9 +57,7 @@ class FileIngestor:
                 f"{empty_rows.index.tolist()}"
             )
 
-        logger.info(
-            "CSV validation passed — %d rows, %d columns", len(df), len(df.columns)
-        )
+        logger.info("CSV validation passed — %d rows, %d columns", len(df), len(df.columns))
         return True
 
     def upload_to_blob(self, filepath: str) -> str:

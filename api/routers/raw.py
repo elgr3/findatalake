@@ -29,9 +29,7 @@ def list_raw(prefix: str = "api/", limit: int = 20):
                 {
                     "name": blob.name,
                     "size_bytes": blob.size or 0,
-                    "last_modified": blob.last_modified.isoformat()
-                    if blob.last_modified
-                    else None,
+                    "last_modified": blob.last_modified.isoformat() if blob.last_modified else None,
                 }
             )
     except Exception as exc:

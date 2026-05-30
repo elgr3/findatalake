@@ -5,20 +5,22 @@ import duckdb as real_duckdb
 import pytest
 from fastapi.testclient import TestClient
 
-
 # ---------------------------------------------------------------------------
 # Client fixture — imported once per session to avoid redundant app setup
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture(scope="module")
 def client():
     from api.main import app
+
     return TestClient(app)
 
 
 # ---------------------------------------------------------------------------
 # Helper builders
 # ---------------------------------------------------------------------------
+
 
 def _make_blob(name: str, size: int = 4096):
     b = MagicMock()
@@ -43,6 +45,7 @@ def _make_blob_service(*blob_lists):
 # /health tests
 # ---------------------------------------------------------------------------
 
+
 class TestHealthEndpoint:
 
     def test_health_ok(self, client):
@@ -50,8 +53,10 @@ class TestHealthEndpoint:
         mock_service = MagicMock()
         mock_service.list_containers.return_value = iter([MagicMock()])
 
-        with patch("api.routers.health.BlobServiceClient") as mock_bsc, \
-             patch("api.routers.health._DUCKDB_PATH") as mock_path:
+        with (
+            patch("api.routers.health.BlobServiceClient") as mock_bsc,
+            patch("api.routers.health._DUCKDB_PATH") as mock_path,
+        ):
             mock_bsc.from_connection_string.return_value = mock_service
             mock_path.exists.return_value = True
 
@@ -66,8 +71,10 @@ class TestHealthEndpoint:
 
     def test_health_degraded_when_azure_fails(self, client):
         """GET /health returns status='degraded' when Azure Blob is unreachable."""
-        with patch("api.routers.health.BlobServiceClient") as mock_bsc, \
-             patch("api.routers.health._DUCKDB_PATH") as mock_path:
+        with (
+            patch("api.routers.health.BlobServiceClient") as mock_bsc,
+            patch("api.routers.health._DUCKDB_PATH") as mock_path,
+        ):
             mock_bsc.from_connection_string.side_effect = Exception("Connection refused")
             mock_path.exists.return_value = True
 
@@ -83,8 +90,10 @@ class TestHealthEndpoint:
         mock_service = MagicMock()
         mock_service.list_containers.return_value = iter([MagicMock()])
 
-        with patch("api.routers.health.BlobServiceClient") as mock_bsc, \
-             patch("api.routers.health._DUCKDB_PATH") as mock_path:
+        with (
+            patch("api.routers.health.BlobServiceClient") as mock_bsc,
+            patch("api.routers.health._DUCKDB_PATH") as mock_path,
+        ):
             mock_bsc.from_connection_string.return_value = mock_service
             mock_path.exists.return_value = False
 
@@ -98,6 +107,7 @@ class TestHealthEndpoint:
 # ---------------------------------------------------------------------------
 # /stats tests
 # ---------------------------------------------------------------------------
+
 
 class TestStatsEndpoint:
 
@@ -134,6 +144,7 @@ class TestStatsEndpoint:
 # ---------------------------------------------------------------------------
 # /raw tests
 # ---------------------------------------------------------------------------
+
 
 class TestRawEndpoint:
 
@@ -177,6 +188,7 @@ class TestRawEndpoint:
 # /curated tests
 # ---------------------------------------------------------------------------
 
+
 class TestCuratedEndpoint:
 
     def test_curated_empty_when_duckdb_missing(self, client):
@@ -199,8 +211,10 @@ class TestCuratedEndpoint:
         mock_con.__exit__ = MagicMock(return_value=False)
         mock_con.execute.side_effect = real_duckdb.CatalogException("Table not found")
 
-        with patch("api.routers.curated._DUCKDB_PATH") as mock_path, \
-             patch("api.routers.curated.duckdb") as mock_duckdb:
+        with (
+            patch("api.routers.curated._DUCKDB_PATH") as mock_path,
+            patch("api.routers.curated.duckdb") as mock_duckdb,
+        ):
             mock_path.exists.return_value = True
             mock_duckdb.CatalogException = real_duckdb.CatalogException
             mock_duckdb.connect.return_value = mock_con
@@ -216,6 +230,7 @@ class TestCuratedEndpoint:
 # ---------------------------------------------------------------------------
 # /ingest tests
 # ---------------------------------------------------------------------------
+
 
 class TestIngestEndpoint:
 

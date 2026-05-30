@@ -7,10 +7,10 @@ import numpy as np
 import pandas as pd
 import pytest
 
-
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture
 def env_setup(monkeypatch):
@@ -53,6 +53,7 @@ def mock_transformer(env_setup):
         mock_instance = MagicMock()
         mock_bsc.from_connection_string.return_value = mock_instance
         from transformation.spark_staging import StagingTransformer
+
         transformer = StagingTransformer()
         transformer._mock_blob_service = mock_instance
         yield transformer, mock_instance
@@ -62,12 +63,14 @@ def mock_transformer(env_setup):
 # StagingTransformer tests
 # ---------------------------------------------------------------------------
 
+
 class TestStagingTransformer:
 
     def test_init_raises_without_env(self, monkeypatch):
         """EnvironmentError must be raised when the connection string is missing."""
         monkeypatch.delenv("AZURE_STORAGE_CONNECTION_STRING", raising=False)
         from transformation.spark_staging import StagingTransformer
+
         with pytest.raises(EnvironmentError, match="AZURE_STORAGE_CONNECTION_STRING"):
             StagingTransformer()
 
@@ -81,7 +84,8 @@ class TestStagingTransformer:
         mock_blob_2.name = "api/year=2026/month=05/day=29/TTE_PA_20260529T120001.json"
 
         mock_service.get_container_client.return_value.list_blobs.return_value = [
-            mock_blob_1, mock_blob_2
+            mock_blob_1,
+            mock_blob_2,
         ]
 
         result = transformer.list_raw_blobs("api/year=2026/")
@@ -90,12 +94,16 @@ class TestStagingTransformer:
         assert len(result) == 2
         assert all(isinstance(name, str) for name in result)
 
-    def test_transform_market_data_adds_required_columns(self, mock_transformer, market_json_payload):
+    def test_transform_market_data_adds_required_columns(
+        self, mock_transformer, market_json_payload
+    ):
         """transform_market_data must add daily_return, moving_avg_20, ticker, ingested_at."""
         transformer, mock_service = mock_transformer
 
         raw_bytes = json.dumps(market_json_payload).encode()
-        mock_service.get_blob_client.return_value.download_blob.return_value.readall.return_value = raw_bytes
+        mock_service.get_blob_client.return_value.download_blob.return_value.readall.return_value = (
+            raw_bytes
+        )
 
         blob_path = "api/year=2026/month=05/day=29/TTE_PA_20260529T120000.json"
         df = transformer.transform_market_data(blob_path)
@@ -106,17 +114,21 @@ class TestStagingTransformer:
         assert (df["ticker"] == "TTE.PA").all()
         assert len(df) > 0
 
-    def test_transform_market_data_filters_invalid_close(self, mock_transformer, market_json_payload):
+    def test_transform_market_data_filters_invalid_close(
+        self, mock_transformer, market_json_payload
+    ):
         """transform_market_data must drop rows where close is null or <= 0."""
         transformer, mock_service = mock_transformer
 
         # Inject a zero and a negative close value
         data_dict = market_json_payload["data"]
-        data_dict["data"][0][3] = 0.0    # index 3 = Close column
+        data_dict["data"][0][3] = 0.0  # index 3 = Close column
         data_dict["data"][1][3] = -5.0
 
         raw_bytes = json.dumps(market_json_payload).encode()
-        mock_service.get_blob_client.return_value.download_blob.return_value.readall.return_value = raw_bytes
+        mock_service.get_blob_client.return_value.download_blob.return_value.readall.return_value = (
+            raw_bytes
+        )
 
         blob_path = "api/year=2026/month=05/day=29/TTE_PA_20260529T120000.json"
         df = transformer.transform_market_data(blob_path)
@@ -134,7 +146,9 @@ class TestStagingTransformer:
             "TTE.PA,TotalEnergies,Energy,143.6,8.1,5.4,207.4,101300\n"
         ).encode()
 
-        mock_service.get_blob_client.return_value.download_blob.return_value.readall.return_value = csv_content
+        mock_service.get_blob_client.return_value.download_blob.return_value.readall.return_value = (
+            csv_content
+        )
 
         df = transformer.transform_fundamentals("files/cac40_fundamentals_2026-05-29.csv")
 

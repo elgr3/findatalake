@@ -50,12 +50,8 @@ async def ingest_fast(body: IngestBody = None):
 
     async def _process(ticker: str) -> dict:
         try:
-            data = await loop.run_in_executor(
-                None, ingestor.fetch_ticker_data, ticker
-            )
-            blob_path = await loop.run_in_executor(
-                None, ingestor.upload_to_blob, data, ticker
-            )
+            data = await loop.run_in_executor(None, ingestor.fetch_ticker_data, ticker)
+            blob_path = await loop.run_in_executor(None, ingestor.upload_to_blob, data, ticker)
             return {"ticker": ticker, "blob": blob_path}
         except Exception as exc:
             return {"ticker": ticker, "error": str(exc)}

@@ -57,9 +57,7 @@ class AnomalyScorer:
 
         def _load(blob_name: str):
             raw_bytes = (
-                self.blob_service.get_blob_client(
-                    container=self.container_models, blob=blob_name
-                )
+                self.blob_service.get_blob_client(container=self.container_models, blob=blob_name)
                 .download_blob()
                 .readall()
             )
@@ -104,10 +102,7 @@ class AnomalyScorer:
     def _load_staging_data(self) -> pd.DataFrame:
         """Downloads all Parquet blobs from staging/market_data/ and concatenates them."""
         container_client = self.blob_service.get_container_client(self.container_staging)
-        blobs = [
-            b.name
-            for b in container_client.list_blobs(name_starts_with="market_data/")
-        ]
+        blobs = [b.name for b in container_client.list_blobs(name_starts_with="market_data/")]
 
         if not blobs:
             raise FileNotFoundError("No data found under staging/market_data/")
