@@ -1,6 +1,4 @@
-import io
 import json
-from datetime import datetime
 from unittest.mock import MagicMock, patch
 
 import numpy as np
@@ -101,9 +99,8 @@ class TestStagingTransformer:
         transformer, mock_service = mock_transformer
 
         raw_bytes = json.dumps(market_json_payload).encode()
-        mock_service.get_blob_client.return_value.download_blob.return_value.readall.return_value = (
-            raw_bytes
-        )
+        dl = mock_service.get_blob_client.return_value.download_blob.return_value
+        dl.readall.return_value = raw_bytes
 
         blob_path = "api/year=2026/month=05/day=29/TTE_PA_20260529T120000.json"
         df = transformer.transform_market_data(blob_path)
@@ -126,9 +123,8 @@ class TestStagingTransformer:
         data_dict["data"][1][3] = -5.0
 
         raw_bytes = json.dumps(market_json_payload).encode()
-        mock_service.get_blob_client.return_value.download_blob.return_value.readall.return_value = (
-            raw_bytes
-        )
+        dl = mock_service.get_blob_client.return_value.download_blob.return_value
+        dl.readall.return_value = raw_bytes
 
         blob_path = "api/year=2026/month=05/day=29/TTE_PA_20260529T120000.json"
         df = transformer.transform_market_data(blob_path)
@@ -146,9 +142,8 @@ class TestStagingTransformer:
             "TTE.PA,TotalEnergies,Energy,143.6,8.1,5.4,207.4,101300\n"
         ).encode()
 
-        mock_service.get_blob_client.return_value.download_blob.return_value.readall.return_value = (
-            csv_content
-        )
+        dl = mock_service.get_blob_client.return_value.download_blob.return_value
+        dl.readall.return_value = csv_content
 
         df = transformer.transform_fundamentals("files/cac40_fundamentals_2026-05-29.csv")
 
@@ -158,7 +153,7 @@ class TestStagingTransformer:
             assert col == col.strip(), f"Column '{col}' still has surrounding whitespace"
 
     def test_upload_parquet_returns_partitioned_path(self, mock_transformer):
-        """upload_parquet must return a blob path with year= / month= partitioning and .parquet ext."""
+        """upload_parquet must return a path with year=/month= partitioning and .parquet ext."""
         transformer, mock_service = mock_transformer
 
         mock_blob_client = MagicMock()
