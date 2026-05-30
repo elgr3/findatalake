@@ -23,7 +23,7 @@ CAC40_TICKERS = [
     "RMS.PA", "KER.PA", "LR.PA", "OR.PA", "MC.PA",
     "ML.PA", "ORA.PA", "RI.PA", "PUB.PA", "RNO.PA",
     "SAF.PA", "SGO.PA", "SAN.PA", "SU.PA", "GLE.PA",
-    "STLAM.MI", "STM.PA", "TEP.PA", "HO.PA", "TTE.PA",
+    "STLAM.MI", "STM.MI", "TEP.PA", "HO.PA", "TTE.PA",
     "URW.PA", "VIE.PA", "DG.PA", "VIV.PA", "WLN.PA",
 ]
 
